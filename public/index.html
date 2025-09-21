@@ -1,49 +1,90 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Uploader</title>
+    <title>Aplikasi Upload Foto Karyawan - MVP Salon</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Upload Form</h1>
-        <form id="upload-form">
-            <div class="form-group">
-                <select id="employee-name" class="form-control" required>
-                    <option value="" disabled selected>Select Your Name</option>
-                    <!-- Names will be populated by script.js -->
-                    <option value="Alice">Alice</option>
-                    <option value="Bob">Bob</option>
-                    <option value="Charlie">Charlie</option>
-                </select>
+    <div class="phone-container">
+        <div class="app-screen">
+            <div class="app-header">
+                <h1>📸 MVP Salon</h1>
+                <p>Upload Foto Karyawan</p>
             </div>
-            <div class="form-group">
-                <button type="submit" id="submit-btn" class="btn btn-primary">
-                    📸 Take Photo
-                </button>
-                <input type="file" id="file-input" accept="image/*" capture="environment" style="display: none;">
-            </div>
-        </form>
-        <div id="status" class="status"></div>
-        <div class="tips">
-            <h3>💡 Tips for a good photo:</h3>
-            <ul>
-                <li>Ensure good lighting.</li>
-                <li>Hold the camera steady.</li>
-                <li>Make sure the text is clear and fills the frame.</li>
-            </ul>
-        </div>
+            <div class="container">
+                <form id="upload-form">
+                    <div class="section">
+                        <h2 class="section-title">👤 Pilih Nama Karyawan</h2>
+                        <div class="form-group">
+                            <select id="employee-name" class="form-control" required>
+                                <option value="" disabled selected>Pilih Nama Anda</option>
+                                <option value="Andi Pratama">Andi Pratama</option>
+                                <option value="Sari Dewi">Sari Dewi</option>
+                                <option value="Budi Santoso">Budi Santoso</option>
+                                <option value="Maya Sari">Maya Sari</option>
+                                <option value="Rudi Hermawan">Rudi Hermawan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="action-grid">
+                            <div class="action-card" id="submit-btn">
+                                <div class="card-icon">📸</div>
+                                <h3>Ambil Foto</h3>
+                                <p>Gunakan kamera untuk mengambil foto</p>
+                            </div>
+                        </div>
+                        <input type="file" id="file-input" accept="image/*" capture="environment" style="display: none;">
+                    </div>
+                </form>
 
-        <!-- Debug section - remove in production -->
-        <div class="debug-section" style="margin-top: 2rem; padding: 1rem; background: #f0f0f0; border-radius: 4px; font-size: 14px;">
-            <h3>🔧 Debug Tools</h3>
-            <button id="test-connection-btn" class="btn" style="width: auto; margin: 0.5rem 0; background: #17a2b8;">
-                Test n8n Connection
-            </button>
-            <div id="debug-output" style="margin-top: 0.5rem; padding: 0.5rem; background: white; border-radius: 2px; max-height: 200px; overflow-y: auto;"></div>
+                <div id="status" class="status"></div>
+
+                <div class="tips-section">
+                    <h3 class="tips-title">💡 Tips Foto yang Baik:</h3>
+                    <div class="tips-grid">
+                        <div class="tip-item">
+                            <span class="tip-emoji">💡</span>
+                            <span>Pastikan pencahayaan cukup</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-emoji">📱</span>
+                            <span>Pegang kamera dengan stabil</span>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-emoji">🎯</span>
+                            <span>Pastikan wajah terlihat jelas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug section - remove in production -->
+                <div class="debug-section">
+                    <h3>🔧 Alat Debug</h3>
+                    <button id="test-connection-btn" class="debug-btn">
+                        Test Koneksi n8n
+                    </button>
+                    <div id="debug-output" class="debug-output"></div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <span class="nav-icon">📸</span>
+                    <span class="nav-label">Upload</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">Riwayat</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-label">Pengaturan</span>
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>

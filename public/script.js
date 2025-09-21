@@ -21,9 +21,16 @@ const state = {
 
 // --- RENDER FUNCTION ---
 function render() {
-    // Disable button during upload
-    submitBtn.disabled = state.isUploading;
-    submitBtn.textContent = state.isUploading ? 'Processing...' : '📸 Take Photo';
+    // Update button state and text
+    if (state.isUploading) {
+        submitBtn.classList.add('loading');
+        submitBtn.querySelector('h3').textContent = 'Memproses...';
+        submitBtn.querySelector('p').textContent = 'Mohon tunggu sebentar';
+    } else {
+        submitBtn.classList.remove('loading');
+        submitBtn.querySelector('h3').textContent = 'Ambil Foto';
+        submitBtn.querySelector('p').textContent = 'Gunakan kamera untuk mengambil foto';
+    }
 }
 
 // Make functions available globally for testing
@@ -203,14 +210,14 @@ async function submitFormWithRetry(employeeName, file) {
 
 // --- EVENT LISTENERS ---
 
-// Handle form submission to trigger file input
-uploadForm.addEventListener('submit', (e) => {
+// Handle action card click to trigger file input
+submitBtn.addEventListener('click', (e) => {
     e.preventDefault();
     hideStatus();
 
     const selectedName = employeeNameSelect.value;
     if (!selectedName) {
-        showStatus('Please select your name first.', 'error');
+        showStatus('Silakan pilih nama Anda terlebih dahulu.', 'error');
         return;
     }
 
@@ -233,15 +240,15 @@ fileInput.addEventListener('change', async (e) => {
         // Validate file before upload
         validateFile(file);
 
-        showStatus('Uploading and processing...', 'info');
+        showStatus('Mengupload dan memproses foto...', 'info');
 
         // Use enhanced submit with retry logic
         const result = await submitFormWithRetry(employeeName, file);
 
         // Show success with additional details if available
-        let successMessage = 'Form submitted successfully!';
+        let successMessage = 'Foto berhasil diupload!';
         if (result.extractedText && result.extractedText !== 'OCR processing completed') {
-            successMessage += ' Text extracted and processed.';
+            successMessage += ' Foto telah diproses dan disimpan.';
         }
 
         showStatus(successMessage, 'success');
@@ -255,7 +262,7 @@ fileInput.addEventListener('change', async (e) => {
 
     } catch (error) {
         console.error('Submission failed:', error);
-        showStatus(`Error: ${error.message || 'Submission failed.'}`, 'error');
+        showStatus(`Kesalahan: ${error.message || 'Upload gagal. Silakan coba lagi.'}`, 'error');
         state.isUploading = false;
         render();
 
