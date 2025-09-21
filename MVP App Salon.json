@@ -1,0 +1,377 @@
+{
+  "name": "MVP App Salon",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-image",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "48171895-84db-4552-bac0-62e41384e83f",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        160
+      ],
+      "webhookId": "upload-image-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition1",
+              "leftValue": "always_pass",
+              "rightValue": "always_pass",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fdc6041f-4b2e-4572-a96b-1f4d83545275",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "jsonToBinary",
+        "convertAllData": false,
+        "sourceKey": "imageData",
+        "destinationKey": "data",
+        "options": {
+          "fileName": "={{ $json.fileName }}",
+          "mimeType": "={{ $json.contentType }}"
+        }
+      },
+      "id": "base64-converter-node-id",
+      "name": "Convert to Binary",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": true,\n  \"message\": \"Image uploaded successfully to Google Drive and processed\",\n  \"fileId\": $('Upload file').item.json.id,\n  \"fileName\": $('Upload file').item.json.name,\n  \"uploadTime\": $now,\n  \"extractedText\": $('Analyze image').item.json.response || \"OCR processing completed\",\n  \"employeeName\": $('Webhook').item.json.body.employeeName\n} }}",
+        "options": {}
+      },
+      "id": "c8a96025-b919-42cf-9b60-09702d031a0c",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": false,\n  \"error\": \"Invalid request. Employee name is required.\",\n  \"received\": {\n    \"employeeName\": $json.employeeName,\n    \"hasFile\": $json.fileName ? \"yes\" : \"no\",\n    \"fileName\": $json.fileName\n  }\n} }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "2d275ca5-e625-476a-8f64-1e66ae1538e2",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"success\": false,\n  \"error\": \"Failed to upload image to Google Drive\",\n  \"details\": $json.error?.message || \"Unknown error occurred\",\n  \"debugInfo\": {\n    \"receivedData\": Object.keys($json),\n    \"binaryData\": Object.keys($binary),\n    \"employeeName\": $json.employeeName,\n    \"hasDataBinary\": $binary.data ? \"yes\" : \"no\"\n  }\n} }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "7fd65763-fb1c-465f-8d05-20e32d975a29",
+      "name": "Upload Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gemini-1.5-flash"
+        },
+        "prompt": "Please extract all text from this handwritten form. Return the text in a structured format, preserving the layout and any form fields you can identify. If certain parts are unclear, indicate this in your response.",
+        "options": {
+          "maxTokens": 1000,
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        16,
+        80
+      ],
+      "id": "59d0682e-2591-44d4-9a74-2129a712af2b",
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hoXZncr6Sqt9IWLQ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Upload file').item.json.id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty"
+                    },
+                    "id": "ddf0e5dc-881e-464a-a778-7daced32a6d3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "upload_success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f78fb4bf-42e0-4842-ae64-f4abc1b9c074",
+                    "leftValue": "={{ $('Upload file').item.json.id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "isEmpty",
+                      "name": "filter.operator.isEmpty"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "upload_failed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -192,
+        64
+      ],
+      "id": "91074651-73ba-4824-ba56-5a994b859707",
+      "name": "Check Upload Result"
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.employeeName }} - {{ $now.format('YYYY-MM-DD - HH-mm') }}.{{ $binary.data.fileExtension || 'jpg' }}",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1ZChraT3fzeZuG2Fu6LW64K0Oyx8BARjF",
+          "mode": "list",
+          "cachedResultName": "MVP App Salon - Image Upload",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1ZChraT3fzeZuG2Fu6LW64K0Oyx8BARjF"
+        },
+        "binaryPropertyName": "data",
+        "options": {}
+      },
+      "id": "33f1266f-19b4-4703-965c-c694f2ae654c",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        144
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "jCi0dX7rd5crKlfY",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Image": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Success Response": {
+      "main": [
+        []
+      ]
+    },
+    "Check Upload Result": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Response": {
+      "main": [
+        []
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Check Upload Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Binary": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4df78e56-31b8-4bc7-b5b0-b17dcd1b867b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c749773b137ff9d21f34917e4d9a1919a845ddcd9cacb16232078b632b274eeb"
+  },
+  "id": "w6lt7ZDYwqk7yfM6",
+  "tags": []
+}

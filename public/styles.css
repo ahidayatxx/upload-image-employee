@@ -1,0 +1,118 @@
+
+:root {
+    --primary-gradient-start: #667eea;
+    --primary-gradient-end: #764ba2;
+    --accent-gradient-start: #4285f4;
+    --accent-gradient-end: #34a853;
+    --color-success: #28a745;
+    --color-error: #dc3545;
+    --color-info: #17a2b8;
+    --color-text: #333;
+    --color-text-light: #f8f9fa;
+    --color-bg: #f4f7f6;
+    --font-family: Arial, sans-serif;
+    --font-size-base: 16px;
+    --font-size-md: 18px;
+    --font-size-lg: 24px;
+    --spacing-unit: 1rem;
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+.container {
+    max-width: 400px;
+    width: 100%;
+    padding: calc(var(--spacing-unit) * 2);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: var(--font-size-lg);
+    background: linear-gradient(90deg, var(--primary-gradient-start), var(--primary-gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: var(--spacing-unit);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-unit);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--font-size-base);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    color: var(--color-text-light);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status {
+    margin-top: var(--spacing-unit);
+    padding: 0.75rem;
+    border-radius: 4px;
+    display: none; /* Hidden by default */
+}
+
+.status.success {
+    background-color: var(--color-success);
+    color: var(--color-text-light);
+}
+
+.status.error {
+    background-color: var(--color-error);
+    color: var(--color-text-light);
+}
+
+.status.info {
+    background-color: var(--color-info);
+    color: var(--color-text-light);
+}
+
+.tips {
+    margin-top: calc(var(--spacing-unit) * 2);
+    padding: var(--spacing-unit);
+    background: #e9ecef;
+    border-radius: 4px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.tips h3 {
+    margin-top: 0;
+    font-size: var(--font-size-base);
+}
